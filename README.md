@@ -19,5 +19,7 @@ tar xvfz textile-go_"$RELEASE"_linux-amd64.tar.gz
 rm textile-go_"$RELEASE"_linux-amd64.tar.gz
 sudo ./install.sh
 textile init -s $(textile wallet init | tail -n1)
+textile threads add --type open --sharing shared --media test-media
+textile config API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
 textile daemon
 ```
