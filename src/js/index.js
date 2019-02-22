@@ -7,7 +7,8 @@ import waterfall from 'async/waterfall'
 // textile config API.HTTPHeaders.Access-Control-Allow-Origin '["*"]'
 const HOST = 'http://127.0.0.1'
 const API = `${HOST}:40600/api/v0`
-const THREAD = '12D3KooWEyUT3VTkZVEmvYhYYfAVmwX9NQPD777DPLA55s1MZqCS'
+const THREAD_NAME = 'test-media'
+let THREAD_ID
 
 const processDrop = function (event) {
   event.preventDefault()
@@ -57,7 +58,7 @@ const processDrop = function (event) {
 
 const processImage = async (file) => {
   const out = await addFile(file, {
-    thread: THREAD,
+    thread: THREAD_ID,
     caption: 'dropped file'
   }, result => console.log(`processed '${result.name}' file`))
   console.log(out)
@@ -71,6 +72,10 @@ const processImage = async (file) => {
 const getThreadInfo = async (thread) => {
   const threadId = thread || 'default'
   return executeJsonCmd('GET', `${API}/threads/${threadId}`, { ctype: 'application/json' })
+}
+
+const getThreads = async () => {
+  return executeJsonCmd('GET', `${API}/threads`, { ctype: 'application/json' })
 }
 
 const addFile = async (file, opts, output) => {
@@ -177,16 +182,26 @@ const millNode = async (payload, node, output, name) => {
   }
 }
 
-const container = document.querySelector('#dropZone')
+const init = async () => {
+  const threads = await getThreads()
+  for (const thread of threads) {
+    if (thread.name === THREAD_NAME) {
+      THREAD_ID = thread.id
+    }
+  }
+  const container = document.querySelector('#dropZone')
 
-container.ondragover = function (event) {
-  event.preventDefault()
-  this.classList.add('hover')
+  container.ondragover = function (event) {
+    event.preventDefault()
+    this.classList.add('hover')
+  }
+
+  container.ondragleave = function (event) {
+    event.preventDefault()
+    this.classList.remove('hover')
+  }
+
+  container.ondrop = processDrop
 }
 
-container.ondragleave = function (event) {
-  event.preventDefault()
-  this.classList.remove('hover')
-}
-
-container.ondrop = processDrop
+init()
