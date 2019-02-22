@@ -10,7 +10,7 @@ Should be as easy as
 yarn
 ```
 
-Assumes you have a locally running Textile Daemon:
+Assumes you have a locally running Textile Daemon, and that you have already created a thread named 'test-media' with the default media schema. The following set of commands should get you from zero to the required daemon setup, at which point `yarn` should 'just work'. Note that you may want to update/change the release version.
 
 ```
 RELEASE=1.0.0-rc42 # For example
